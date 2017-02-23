@@ -49,7 +49,7 @@ function createScene() {
 
   var c = document.getElementById("gameCanvas");
 
-  renderer = new THREE.WebGLRenderer();
+  renderer = new THREE.WebGLRenderer({ antialias: true });
   camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 
   scene = new THREE.Scene();
@@ -304,6 +304,8 @@ function draw() {
 function ballPhysics() {
   // if ball goes off the 'left' side (Player's side)
   if (ball.position.x <= -fieldWidth / 2) {
+    sound_miss();
+
     // CPU scores
     score2++;
     // update scoreboard HTML
@@ -315,6 +317,8 @@ function ballPhysics() {
 
   // if ball goes off the 'right' side (CPU's side)
   if (ball.position.x >= fieldWidth / 2) {
+    sound_miss();
+
     // Player scores
     score1++;
     // update scoreboard HTML
@@ -419,8 +423,8 @@ function playerPaddleMovement() {
 // Handles camera and lighting logic
 function cameraPhysics() {
   // we can easily notice shadows if we dynamically move lights during the game
-  spotLight.position.x = ball.position.x * 2;
-  spotLight.position.y = ball.position.y * 2;
+  // spotLight.position.x = ball.position.x * 2;
+  // spotLight.position.y = ball.position.y * 2;
 
   // move to behind the player's paddle
   camera.position.x = paddle1.position.x - 100;
@@ -460,6 +464,7 @@ function paddlePhysics() {
         // this is not realistic physics, just spices up the gameplay
         // allows you to 'slice' the ball to beat the opponent
         ballDirY -= paddle1DirY * 0.7;
+        sound_hit();
       }
     }
   }
@@ -488,6 +493,7 @@ function paddlePhysics() {
         // this is not realistic physics, just spices up the gameplay
         // allows you to 'slice' the ball to beat the opponent
         ballDirY -= paddle2DirY * 0.7;
+        sound_hit();
       }
     }
   }
@@ -541,4 +547,14 @@ function matchScoreCheck() {
     paddle2.scale.z = 2 + Math.abs(Math.sin(bounceTime * 0.1)) * 10;
     paddle2.scale.y = 2 + Math.abs(Math.sin(bounceTime * 0.05)) * 10;
   }
+}
+
+function sound_hit() {
+  var snd = new Audio("hit.wav"); // buffers automatically when created
+  snd.play();
+}
+
+function sound_miss() {
+  var snd = new Audio("miss.wav"); // buffers automatically when created
+  snd.play();
 }
